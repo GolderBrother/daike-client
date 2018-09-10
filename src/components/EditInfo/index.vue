@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-nav-bar title="个人信息" left-text="返回" right-text="保存" left-arrow @click-left="back" @click-right="saveInfo" />
+    <van-nav-bar title="个人信息" left-text="返回" right-text="保存" left-arrow @click-left="back" @click-right="saveInfo" />
 
     <van-cell-group class="box">
       <van-field v-model="editInfo.userName" label-align="left" clearable label="姓名" icon="question" placeholder="请输入用户名" @click-icon="questionName" />
@@ -22,7 +22,7 @@
       <van-field v-model="editInfo.qq" label-align="left" clearable label="QQ" placeholder="请输入QQ号" />
     </van-cell-group>
 
-    <van-actionsheet v-model="isShowCelectSchool" title="输入学校名称查询" @cancel="onCancel" ref="actionsheet">
+    <van-actionsheet v-model="isShowCelectSchool" title="输入学校名称查询" ref="actionsheet">
       <van-search v-model="schoolName" placeholder="请输入学校名" show-action @search="onSearchSchool">
         <div slot="action" @click="onSearchSchool">搜索</div>
       </van-search>
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapMutations, mapGetters } from "vuex";
 
 export default {
   data() {
@@ -62,9 +62,9 @@ export default {
     this.editInfo = Object.assign({}, this.user);
   },
   computed: {
-    ...mapState({
-      user: state => state.mine.user
-    })
+    ...mapGetters([
+      'user'
+    ])
   },
   methods: {
     ...mapMutations(['SET_USER']),

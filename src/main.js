@@ -2,19 +2,19 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
-import router from './router'
-import store from './../vuex/index'
-
+import router from './router/permission'
+import store from '@/store'
 import '../static/clear-default.css'
 
 Vue.config.productionTip = false
 
-import api from './../axios/index'
+import api from './../axios'
 Vue.use(api)
 
 import Vant from 'vant'
+import { Toast } from 'vant';
 import 'vant/lib/vant-css/index.css'
-Vue.use(Vant)
+Vue.use(Vant).use(Toast)
 
 /* eslint-disable no-new */
 new Vue({

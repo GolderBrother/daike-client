@@ -1,10 +1,11 @@
 /*
- * @Author: kuangxj 
- * @Email: frankxjkuang@gmail.com 
- * @Date: 2018-04-19 12:02:14 
- * @Last Modified by: kaungxj
- * @Last Modified time: 2018-08-24 22:47:00
+ * @Author: james.zhang 
+ * @Date: 2018-09-10 15:38:14 
+ * @Last Modified by: james.zhang
+ * @Last Modified time: 2018-09-10 15:38:34
+ * @Description: vuex store 
  */
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 import mine from './modules/mine'
@@ -17,7 +18,7 @@ Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
     modules: {
         about,
         home,
@@ -26,3 +27,4 @@ export default new Vuex.Store({
     },
     strict: process.env.NODE_ENV !== 'production'
 })
+export default store

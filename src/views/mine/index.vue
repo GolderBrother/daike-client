@@ -6,7 +6,7 @@
 
     <van-row type="flex" align="center">
       <van-col span="4">
-        <img class="header-img" :src="user.headerImg || defaultHeader" alt="">
+        <img class="header-img" :src="user.avatar || defaultHeader" alt="">
       </van-col>
       <van-col span="10" offset="2" class="username">
         {{user.userName}}
@@ -14,6 +14,7 @@
 
       <van-col span="8" offset="2">
         <van-button class="btn-edit" size="mini" @click="onToggleEditPopup(true)">编辑个人资料</van-button>
+        <van-button class="btn-logout" size="mini" @click="goLogin()">{{ user.userName ? '退出登录' : '前往登录'}}</van-button>
       </van-col>
     </van-row>
 
@@ -74,13 +75,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import editInfo from './components/editInfo'
-import defaultHeader from '@/assets/default_header.png'
-
+import { mapGetters } from 'vuex'
+import EditInfo from '@/components/EditInfo'
+import defaultHeader from '@/assets/images/default_header.png'
 export default {
   components: {
-    editInfo
+    EditInfo
   },
   data() {
     return {
@@ -90,13 +90,26 @@ export default {
   },
   methods: {
     onToggleEditPopup(flag) {
-      this.isShowEdit = flag;
-    }
+      const { userName } = this.user;
+      console.log(this.user)
+      if(userName){
+        this.isShowEdit = flag;
+      }else{
+        this.$toast('请先登录')
+      }
+    },
+    goLogin(){
+      const { userName } = this.user;
+      if(userName){
+        this.$store.dispatch("exit");
+      }
+      this.$router.push("/login")
+    },
   },
   computed: {
-    ...mapState({
-      user: state => state.mine.user
-    })
+    ...mapGetters([
+      'user'
+    ])
   },
   filters: {
     mixAsterisk(phone) {
@@ -132,8 +145,13 @@ export default {
 .row {
   margin: 10px 0;
 }
-.btn-edit {
+.btn-edit ,.btn-logout{
   width: 100px;
+  margin: 5px 0;
+}
+.btn-logout{
+  color: #fff;
+  background: red;
 }
 </style>
 

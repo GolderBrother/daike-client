@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <van-card v-for="course in courses" :key="course.id" :thumb="course.publisherHeader">
+    <van-card v-for="course in courses" :key="course.id" :thumb="course.publisherHeader || thumbImg">
       <div class="title" slot="title">
         课程名称：{{course.courseName}} <br />
       </div>
@@ -117,7 +117,9 @@ export default {
     return {
       courses: "",
       course: {},
-      isShowCourse: false
+      isShowCourse: false,
+      // 引入静态资源，require('xxx') 引用的相对路径
+      thumbImg: require("../../assets/images/daike.png")
     };
   },
   methods: {
@@ -130,16 +132,14 @@ export default {
       // 有兴趣的花可以去看看： https://youzan.github.io/vant/#/zh-CN/sku
       this.course.tree = [
         {
-          v: [
-            {}, {}
-          ],
+          v: [{}, {}]
         }
       ];
     },
     // 代课
     onSubstituteClicked(course) {
       if (this.user.userId == course.publisher) {
-        this.$toast('不能代自己发布的课程！');
+        this.$toast("不能代自己发布的课程！");
         return;
       }
       this.$http
@@ -155,12 +155,14 @@ export default {
     },
     // 收藏
     onCollectionClicked() {
-      this.$http.collectCourse({
-        userId: this.user.userId,
-        courseId: this.course.id
-      }).then(res => {
-        this.$toast(res.msg);
-      })
+      this.$http
+        .collectCourse({
+          userId: this.user.userId,
+          courseId: this.course.id
+        })
+        .then(res => {
+          this.$toast(res.msg);
+        });
     }
   },
   computed: {
@@ -175,10 +177,27 @@ export default {
     }
   },
   mounted() {
+    this.$toast.allowMultiple();
+    const toastLoading = this.$toast.loading({
+      mask: true,
+      duration: 0,
+      message: "加载中..."
+    });
     this.$http
-      .getCourse({ status: "open" })
+      .getCourse({
+        status: "open"
+      })
       .then(res => {
         this.courses = res.data;
+      })
+      .catch(error => {
+        this.$toast.fail({
+          duration:1000,
+          message :error.message
+        });
+      }).finally(() => {
+        // 不管请求成功失败，都会执行这里面的
+        toastLoading.clear();
       });
   }
 };

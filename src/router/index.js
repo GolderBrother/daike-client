@@ -2,48 +2,61 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router)
-
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      redirect: '/login'
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('@/views/login/index') 
-    },
-    {
-      path: '/home',
-      name: 'home',
-      component: () => import('@/views/home/index'),
-      children: [
-        {
-          path: '/home',
-          redirect: '/home/mine'
-        },
-        {
-          path: '/home/substitute',
-          name: 'substitute',
-          component: () => import('@/views/substitute/index'),
-        },
-        {
-          path: '/home/publish',
-          name: 'publish',
-          component: () => import('@/views/publish/index'),
-        },
-        {
-          path: '/home/course',
-          name: 'course',
-          component: () => import('@/views/course/index'),
-        },
-        {
-          path: '/home/mine',
-          name: 'mine',
-          component: () => import('@/views/mine/index'),
-        }
-      ]
-    }, 
-  ]
+const importViews = file => () => import(`@/views/${file}/index`)
+const importComponent = file => () => import(`@/components/${file}/index`)
+const constantRouterMap = [
+  {
+    path: '/',
+    redirect: '/login'
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: importViews('login')
+  },
+  {
+    path:'/404',
+    name:'404',
+    component: importComponent('NotFound')
+  },
+  {
+    path: '*',
+    redirect: '/404'
+  },
+  {
+    path: '/home',
+    name: 'home',
+    component: importViews('home'),
+    children: [
+      {
+        path: '/home',
+        redirect: '/home/mine'
+      },
+      {
+        path: '/home/substitute',
+        name: 'substitute',
+        component: importViews('substitute'),
+      },
+      {
+        path: '/home/publish',
+        name: 'publish',
+        component: importViews('publish'),
+      },
+      {
+        path: '/home/course',
+        name: 'course',
+        component: importViews('course'),
+      },
+      {
+        path: '/home/mine',
+        name: 'mine',
+        component: importViews('mine'),
+      }
+    ]
+  }, 
+]
+const router = new Router({
+  routes : constantRouterMap
 })
+
+export default router

@@ -13,7 +13,7 @@
     </van-row>
 
     <van-datetime-picker v-show="isShowTimePicker" :min-date="minDate" :maxDate="maxDate" v-model="currentDate" type="datetime" cancel-button-text=" " @confirm="confirmTime" />
-
+    
     <van-cell-group>
       <van-field disabled required :value="publisher.school" placeholder="请输入学校名称" label="学校名" left-icon="wap-home" />
     </van-cell-group>
@@ -64,8 +64,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { formatDateTime } from "@/utils/formatTime"
+import { mapGetters } from "vuex";
+import { formatDateTime } from "@/utils/formatTime";
 export default {
   data() {
     return {
@@ -87,7 +87,7 @@ export default {
     };
   },
   methods: {
-    handlePublish() {
+    async handlePublish() {
       if (!this.courseName || !this.courseClass || !this.coursePlace) {
         this.$toast("必要信息不能为空！");
         return;
@@ -121,20 +121,39 @@ export default {
         hasPhone: this.hasPhone,
         hasReward: this.hasReward
       };
-
-      this.$http.publishCourse(data).then(res => {
-        this.$toast.success("发布成功！");
+      const toastLoading = this.$toast.loading({
+        mask: true,
+        duration: 0,
+        message: "加载中..."
       });
+      try {
+        const res = await this.$http.publishCourse(data);
+        this.$toast.allowMultiple();
+        toastLoading.clear();
+        this.$toast.success("发布成功！");
+        this.clearData();
+      } catch (error) {
+        toastLoading.clear();
+        this.$toast.fail({
+          duration: 1000,
+          message: error.message
+        });
+      }
     },
     confirmTime(value) {
       this.pickDate = formatDateTime(value);
       this.isShowTimePicker = false;
+    },
+    clearData(){
+      this.courseName = "";
+      this.courseClass = "";
+      this.coursePlace = "";
+      this.reward = "";
+      this.remark = "";
     }
   },
   computed: {
-    ...mapState({
-      user: state => state.mine.user
-    }),
+    ...mapGetters(["user"]),
     curriculaTime() {
       return formatDateTime(this.currentDate);
     }

@@ -2,7 +2,7 @@
   <div class="course">
     <van-tabs @click="onChangeTab">
       <van-tab v-for="tab in tabs" :title="tab.title" :key="tab.name">
-        <van-card @click.native="showDetail(course)" v-for="course in courses" :key="course.id" :thumb="course.publisherHeader">
+        <van-card @click.native="showDetail(course)" v-for="course in courses" :key="course.id" :thumb="course.publisherHeader || thumbImg">
           <div class="title" slot="title">
             课程名称：{{course.courseName}} <br />
           </div>
@@ -135,7 +135,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   data() {
@@ -156,29 +156,41 @@ export default {
       ],
       courses: "",
       course: "",
-      isShowDetail: false
+      isShowDetail: false,
+      // 引入静态资源，require('xxx') 引用的相对路径
+      thumbImg: require("../../assets/images/daike.png")
     };
   },
   computed: {
-    ...mapState({
-      user: state => state.mine.user
-    })
+    ...mapGetters(["user"])
   },
   methods: {
-    onChangeTab(index) {
+    async onChangeTab(index) {
       const userId = this.user.userId;
       const type = this.tabs[index].type;
-      this.getCourseByType(userId, type);
+      await this.getCourseByType(userId, type);
     },
-    getCourseByType(userId, type) {
-      this.$http
-        .getCourseByType({
+    async getCourseByType(userId, type) {
+      const toastLoading = this.$toast.loading({
+        mask: true,
+        duration: 0,
+        message: "加载中..."
+      });
+      try {
+        this.$toast.allowMultiple();
+        const { data } = await this.$http.getCourseByType({
           userId,
           type
-        })
-        .then(res => {
-          this.courses = res.data;
         });
+        toastLoading.clear();
+        this.courses = data;
+      } catch (error) {
+        toastLoading.clear();
+        this.$toast.fail({
+          duration:1000,
+          message :error.message
+        });
+      }
     },
     showDetail(course) {
       this.isShowDetail = true;
