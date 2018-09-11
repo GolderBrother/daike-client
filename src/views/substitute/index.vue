@@ -1,5 +1,9 @@
 <template>
   <div class="container">
+    <van-row class="row tip" type="flex" align="center">
+      <van-icon name="peer-pay"></van-icon>
+      <h2>寻找帮太子代课的人...</h2>
+    </van-row>
     <van-card v-for="course in courses" :key="course.id" :thumb="course.publisherHeader || thumbImg">
       <div class="title" slot="title">
         课程名称：{{course.courseName}} <br />
@@ -14,6 +18,7 @@
     </van-card>
 
     <van-sku v-model="isShowCourse" :sku="course" :goods="courseTitle" close-on-click-overlay>
+      <!-- 自定义 sku-header-price -->
       <template slot="sku-header-price">
         <div class="van-sku__goods-price">
           <span>赏金：</span>
@@ -21,6 +26,7 @@
           <span class="van-sku__price-num">{{ course.reward || 0}}</span>
         </div>
       </template>
+      <!-- 自定义 sku-group -->
       <template slot="sku-group">
         <van-row class="row" type="flex" align="center">
           <van-col span="5" offset="1">
@@ -129,7 +135,7 @@ export default {
 
       // 这里这么些是因为 van-sku 组件的限制
       // Vant 的文档写的有点让人难受
-      // 有兴趣的花可以去看看： https://youzan.github.io/vant/#/zh-CN/sku
+      // 有兴趣的话可以去看看： https://youzan.github.io/vant/#/zh-CN/sku
       this.course.tree = [
         {
           v: [{}, {}]
@@ -137,32 +143,41 @@ export default {
       ];
     },
     // 代课
-    onSubstituteClicked(course) {
-      if (this.user.userId == course.publisher) {
+    async onSubstituteClicked(course) {
+      const { userId, userName } = this.user;
+      if (userId == course.publisher) {
         this.$toast("不能代自己发布的课程！");
+        this.isShowCourse = false;
         return;
       }
-      this.$http
-        .substitute({
-          userId: this.user.userId,
-          userName: this.user.userName,
+      try {
+        const res = await this.$http.substitute({
+          userId,
+          userName,
           course
-        })
-        .then(res => {
+        });
+        if (res.code == 1) {
           this.$toast("代课成功！");
-        })
-        .catch(err => {});
+          this.isShowCourse = false;
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
     // 收藏
-    onCollectionClicked() {
-      this.$http
-        .collectCourse({
+    async onCollectionClicked() {
+      try {
+        const { code, msg } = await this.$http.collectCourse({
           userId: this.user.userId,
           courseId: this.course.id
-        })
-        .then(res => {
-          this.$toast(res.msg);
         });
+        if (code == 1) {
+          this.$toast(msg);
+          this.isShowCourse = false;
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   },
   computed: {
@@ -170,13 +185,15 @@ export default {
       user: state => state.mine.user
     }),
     courseTitle() {
+      const { course: { courseName, publisherHeader }, thumbImg } = this;
       return {
-        title: this.course.courseName,
-        picture: this.course.publisherHeader
+        title: courseName,
+        picture: publisherHeader || thumbImg
       };
     }
   },
   mounted() {
+    // 允许存在多个toast实例
     this.$toast.allowMultiple();
     const toastLoading = this.$toast.loading({
       mask: true,
@@ -192,10 +209,11 @@ export default {
       })
       .catch(error => {
         this.$toast.fail({
-          duration:1000,
-          message :error.message
+          duration: 1000,
+          message: error.message
         });
-      }).finally(() => {
+      })
+      .finally(() => {
         // 不管请求成功失败，都会执行这里面的
         toastLoading.clear();
       });
@@ -218,6 +236,13 @@ export default {
 
 .container /deep/ .van-sku__goods-name {
   font-size: 16px;
+}
+
+.tip {
+  margin: 10px;
+  h2 {
+    margin-left: 10px;
+  }
 }
 </style>
 

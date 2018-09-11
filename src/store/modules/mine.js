@@ -1,9 +1,9 @@
 /*
- * @Author: kuangxj 
- * @Email: frankxjkuang@gmail.com 
- * @Date: 2018-04-19 12:14:42 
+ * @Author: james.zhang  
+ * @Date: 2018-09-10 15:26:22
  * @Last Modified by: james.zhang
- * @Last Modified time: 2018-09-10 15:26:22
+ * @Last Modified time: 2018-09-11 17:50:07
+ * @Description: mine store 
  */
 import { Session } from '@/utils/storage';
 import defaultHeader from "@/assets/images/default_header.png";

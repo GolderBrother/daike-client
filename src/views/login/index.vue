@@ -87,13 +87,12 @@ export default {
             account: this.account,
             password: this.password
           });
-          this.$toast.clear();
           this.SET_USER(data);
           this.$router.push("/home");
         } catch (error) {
-          this.$toast.clear();
-          this.$toast.fail(error.message);
+          console.log(error)
         }
+        this.$toast.clear();
       }
     }
   }

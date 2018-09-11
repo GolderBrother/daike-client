@@ -12,9 +12,9 @@ import api from './../axios'
 Vue.use(api)
 
 import Vant from 'vant'
-import { Toast } from 'vant';
+// import { Toast } from 'vant';
 import 'vant/lib/vant-css/index.css'
-Vue.use(Vant).use(Toast)
+Vue.use(Vant)
 
 /* eslint-disable no-new */
 new Vue({

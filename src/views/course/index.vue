@@ -1,15 +1,19 @@
 <template>
   <div class="course">
     <van-tabs @click="onChangeTab">
-      <van-tab v-for="tab in tabs" :title="tab.title" :key="tab.name">
-        <van-card @click.native="showDetail(course)" v-for="course in courses" :key="course.id" :thumb="course.publisherHeader || thumbImg">
-          <div class="title" slot="title">
-            课程名称：{{course.courseName}} <br />
-          </div>
-          <div class="desc" slot="desc">
-            上课时间：{{course.courseTime}} <br /> 上课地点：{{course.coursePlace}} - {{course.courseClass}} <br /> 赏金：¥ {{course.reward ? course.reward : 0}}<br />
-          </div>
-        </van-card>
+      <van-tab v-for="(tab,index) in tabs" :title="tab.title" :key="tab.name">
+        <van-swipe-cell :right-width="65" :left-width="65" @click.native="showDetail(course)" v-for="(course,index) in courses" v-if="course" :key="course.id" :index="index" :type="tab.type" :on-close="deleteClose">
+          <span slot="left">详情</span>
+          <van-card :thumb="course.publisherHeader || thumbImg">
+            <div class="title" slot="title">
+              课程名称：{{course.courseName}} <br />
+            </div>
+            <div class="desc" slot="desc">
+              上课时间：{{course.courseTime}} <br /> 上课地点：{{course.coursePlace}} - {{course.courseClass}} <br /> 赏金：¥ {{course.reward ? course.reward : 0}}<br />
+            </div>
+          </van-card>
+          <span slot="right">删除</span>
+        </van-swipe-cell>
       </van-tab>
     </van-tabs>
 
@@ -136,24 +140,9 @@
 
 <script>
 import { mapGetters } from "vuex";
-
 export default {
   data() {
     return {
-      tabs: [
-        {
-          title: "我发布的",
-          type: "publish"
-        },
-        {
-          title: "我代课的",
-          type: "substitute"
-        },
-        {
-          title: "我收藏的",
-          type: "collect"
-        }
-      ],
       courses: "",
       course: "",
       isShowDetail: false,
@@ -162,10 +151,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["user"])
+    ...mapGetters(["user","tabs"])
   },
   methods: {
-    async onChangeTab(index) {
+    async onChangeTab(index, title) {
       const userId = this.user.userId;
       const type = this.tabs[index].type;
       await this.getCourseByType(userId, type);
@@ -185,16 +174,52 @@ export default {
         toastLoading.clear();
         this.courses = data;
       } catch (error) {
-        toastLoading.clear();
-        this.$toast.fail({
-          duration:1000,
-          message :error.message
-        });
+        console.log(error)
+        // this.$toast.fail({
+        //   duration: 1000,
+        //   message: error.message
+        // });
       }
     },
     showDetail(course) {
       this.isShowDetail = true;
       this.course = course;
+    },
+
+    //delete course
+    async deleteClose(clickPosition, instance) {
+      const { type,index } = instance.$attrs;
+      const { userId } = this.user;
+      const course = this.courses[index]
+      const { publishTime } = course
+      console.log(clickPosition, type, userId);
+
+      switch (clickPosition) {
+        case "left":
+          this.isShowDetail = true;
+          this.showDetail(course)
+          break;
+        case "right":
+          try {
+            const { msg: { n, ok } } = await this.$http.deleteCourseByType({
+              userId,
+              type,
+              course
+            });
+            if (!n) {
+              this.$toast.fail("课程已删除！");
+            } else if (ok) {
+              this.$toast.success("删除成功！");
+              await this.getCourseByType(userId, type);
+            } else {
+              this.$toast.fail("删除失败！");
+            }
+            break;
+          } catch (error) {
+            console.log(error);
+            this.$toast.fail("删除失败！");
+          }
+      }
     }
   },
   mounted() {
@@ -203,8 +228,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.course /deep/ .van-tabs__content {
+<style lang="scss">
+.course .van-tabs__content {
   height: calc(100vh - 94px);
   overflow: auto;
 }
@@ -220,5 +245,23 @@ export default {
 
 .desc {
   font-size: 12px;
+}
+.van-swipe-cell {
+  .van-swipe-cell__left,
+  .van-swipe-cell__right {
+    display: flex;
+    width: 65px;
+    font-size: 16px;
+    color: #ffffff;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .van-swipe-cell__left {
+    background-color: #7ac143;
+  }
+  .van-swipe-cell__right {
+    background-color: #f44;
+  }
 }
 </style>
