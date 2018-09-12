@@ -13,6 +13,10 @@ const constantRouterMap = [
     path: '/login',
     name: 'login',
     component: importViews('login')
+  },{
+    path:'/changePwd',
+    name:'changePwd',
+    component: importViews('changePwd')
   },
   {
     path:'/404',

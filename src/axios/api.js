@@ -2,7 +2,7 @@
  * @Author: james.zhang 
  * @Date: 2018-09-11 14:57:41 
  * @Last Modified by: james.zhang
- * @Last Modified time: 2018-09-11 17:03:18
+ * @Last Modified time: 2018-09-12 10:01:12
  * @Description: axios 封装的公共方法 
  */
 
@@ -16,7 +16,7 @@ import {
 
 export default function $axios(options) {
   return new Promise((resolve, reject) => {
-	// 创建一个axios实例
+    // 创建一个axios实例
     const instance = axios.create({
       baseURL: config.baseURL,
       headers: {},
@@ -82,7 +82,7 @@ export default function $axios(options) {
         }
         // 根据返回的code值来做不同的处理（和后端约定）
 
-		data = JSON.parse(data);
+        data = JSON.parse(data);
         switch (data.code) {
           case 0:
             const message = data.msg || 'Error';
@@ -152,11 +152,11 @@ export default function $axios(options) {
             default:
           }
         }
-		console.log(err)
-		Toast.fail({
-			message:err.message,
-			duration: 1000
-		});
+        console.log(err.message)
+        Toast.fail({
+          message: err.message || err,
+          duration: 1000
+        });
         // Message.error(`ERROR: ${err}`);
         return Promise.reject(err) // 返回接口返回的错误信息
       }

@@ -1,9 +1,8 @@
 /*
- * @Author: kuangxj 
- * @Email: frankxjkuang@gmail.com 
- * @Date: 2018-08-17 14:29:09 
- * @Last Modified by: kaungxj
- * @Last Modified time: 2018-08-22 21:44:46
+ * @Author: james.zhang 
+ * @Date: 2018-09-12 11:43:37 
+ * @Last Modified by:  james.zhang 
+ * @Last Modified time: 2018-09-12 11:43:37 
  * @Description: mine api
  */
 

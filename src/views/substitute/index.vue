@@ -16,7 +16,12 @@
         <van-button @click="onSubstituteClicked(course)" size="mini" type="primary" plain>代课</van-button>
       </div>
     </van-card>
-
+    <van-pagination 
+      v-model="currentPage" 
+      :total-items="totalItems" 
+      :items-per-page="10"
+      @change = "onChange"
+    />
     <van-sku v-model="isShowCourse" :sku="course" :goods="courseTitle" close-on-click-overlay>
       <!-- 自定义 sku-header-price -->
       <template slot="sku-header-price">
@@ -116,11 +121,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   data() {
     return {
+      currentPage: 1,
+      totalItems: 0,
       courses: "",
       course: {},
       isShowCourse: false,
@@ -178,12 +185,49 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    // 分页
+    async onChange(curPage) {
+      try {
+        console.log("change", curPage);
+        // 查询开始页数pageIndex*pageNum和查询条数pageNum
+        const { code, data } = await this.$http.getCourseByPage({
+          pageNum: 10,
+          pageIndex: curPage,
+          status: "open"
+        });
+        if (code == 1) {
+          this.courses = data;
+          console.log(this.courses);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 获取所有课程
+    async getCourses() {
+      // 允许存在多个toast实例
+      this.$toast.allowMultiple();
+      const toastLoading = this.$toast.loading({
+        mask: true,
+        duration: 0,
+        message: "加载中..."
+      });
+      try {
+        const { data } = await this.$http.getCourse({
+          status: "open"
+        });
+        toastLoading.clear();
+        this.courses = data;
+        this.totalItems = data.length;
+      } catch (error) {
+        console.log(error);
+        toastLoading.clear();
+      }
     }
   },
   computed: {
-    ...mapState({
-      user: state => state.mine.user
-    }),
+    ...mapGetters(["user"]),
     courseTitle() {
       const { course: { courseName, publisherHeader }, thumbImg } = this;
       return {
@@ -193,30 +237,7 @@ export default {
     }
   },
   mounted() {
-    // 允许存在多个toast实例
-    this.$toast.allowMultiple();
-    const toastLoading = this.$toast.loading({
-      mask: true,
-      duration: 0,
-      message: "加载中..."
-    });
-    this.$http
-      .getCourse({
-        status: "open"
-      })
-      .then(res => {
-        this.courses = res.data;
-      })
-      .catch(error => {
-        this.$toast.fail({
-          duration: 1000,
-          message: error.message
-        });
-      })
-      .finally(() => {
-        // 不管请求成功失败，都会执行这里面的
-        toastLoading.clear();
-      });
+    this.getCourses();
   }
 };
 </script>

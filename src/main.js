@@ -6,13 +6,13 @@ import router from './router/permission'
 import store from '@/store'
 import '../static/clear-default.css'
 
+// 以阻止 vue 在启动时生成生产提示。
 Vue.config.productionTip = false
 
-import api from './../axios'
+import api from './axios'
 Vue.use(api)
 
 import Vant from 'vant'
-// import { Toast } from 'vant';
 import 'vant/lib/vant-css/index.css'
 Vue.use(Vant)
 

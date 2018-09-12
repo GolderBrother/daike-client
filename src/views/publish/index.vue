@@ -150,6 +150,9 @@ export default {
       this.coursePlace = "";
       this.reward = "";
       this.remark = "";
+      this.hasStuId=false;
+      this.hasPhone=false;
+      this.hasReward=false;
     }
   },
   computed: {

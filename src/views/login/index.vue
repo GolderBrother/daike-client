@@ -9,7 +9,11 @@
 
       <van-field v-show="!isLogin" v-model="rePassword" label-align="left" type="password" clearable label="重复密码" placeholder="请再次输入密码" required />
     </van-cell-group>
-
+    <van-row class="forget-box">
+      <van-col>
+        <span @click="$router.push('/changePwd')">忘记密码?</span>
+      </van-col>
+    </van-row>
     <van-row>
       <van-button size="small" @click="handleRegister">
         {{isLogin ? '注 册' : '已有账号'}}
@@ -24,7 +28,6 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
 
 export default {
   data() {
@@ -36,7 +39,6 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(["SET_USER"]),
     handleQuestion() {
       // no question
     },
@@ -47,12 +49,13 @@ export default {
           password: this.password
         });
         this.$toast.clear();
-        this.SET_USER(data);
+        this.$store.dispatch('setUserInfo',data)
+        // this.SET_USER(data);
         this.$router.push("/home");
       } catch (error) {
-        console.log(error)
-        this.$toast.clear();
-        this.$toast.fail(error || error.message);
+        console.log(error);
+        // this.$toast.clear();
+        // this.$toast.fail( || error.message);
       }
     },
     showLoginTip() {
@@ -90,7 +93,7 @@ export default {
           this.SET_USER(data);
           this.$router.push("/home");
         } catch (error) {
-          console.log(error)
+          console.log(error);
         }
         this.$toast.clear();
       }
@@ -113,9 +116,13 @@ export default {
 
   .box {
     width: 280px;
-    margin-bottom: 20px;
   }
-
+  .forget-box {
+    display: flex;
+    width: 280px;
+    margin: 10px 0;
+    justify-content: flex-end;
+  }
   .btn-login {
     margin-left: 20px;
   }

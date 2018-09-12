@@ -1,9 +1,8 @@
 /*
- * @Author: kuangxj 
- * @Email: frankxjkuang@gmail.com 
+ * @Author: james.zhang  
  * @Date: 2018-08-22 11:38:38 
  * @Last Modified by: james.zhang
- * @Last Modified time: 2018-09-11 12:03:14
+ * @Last Modified time: 2018-09-12 11:44:51
  * @Description: substitute api 
  */
 
@@ -41,6 +40,14 @@ const getCourseByType = data => {
   })
 }
 
+const getCourseByPage = data => {
+  return axios({
+    url:'/course/page',
+    method:'post',
+    data
+  })
+}
+
 const deleteCourseByType = data => {
   return axios({
     url:'/course/del',
@@ -48,10 +55,12 @@ const deleteCourseByType = data => {
     data
   })
 }
+
 export default {
   getCourse,
   substitute,
   collectCourse,
   getCourseByType,
+  getCourseByPage,
   deleteCourseByType
 }

@@ -23,9 +23,6 @@ export default {
       active: 3
     };
   },
-  created() {
-    console.log(this.footerBarList);
-  },
   computed: {
     ...mapGetters(["footerBarList"])
   }

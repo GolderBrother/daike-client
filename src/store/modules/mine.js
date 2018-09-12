@@ -2,7 +2,7 @@
  * @Author: james.zhang  
  * @Date: 2018-09-10 15:26:22
  * @Last Modified by: james.zhang
- * @Last Modified time: 2018-09-11 17:50:07
+ * @Last Modified time: 2018-09-12 11:14:38
  * @Description: mine store 
  */
 import { Session } from '@/utils/storage';
@@ -23,7 +23,7 @@ const getters = {
 // actions
 const actions = {
   setUserInfo({ commit }, data) {
-    commit.commit('SET_USER', data);
+    commit('SET_USER', data);
   },
   exit({commit}){
     commit("EXIT")

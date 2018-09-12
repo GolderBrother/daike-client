@@ -151,7 +151,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["user","tabs"])
+    ...mapGetters(["user", "tabs"])
   },
   methods: {
     async onChangeTab(index, title) {
@@ -171,15 +171,15 @@ export default {
           userId,
           type
         });
-        toastLoading.clear();
         this.courses = data;
       } catch (error) {
-        console.log(error)
+        console.log(error);
         // this.$toast.fail({
         //   duration: 1000,
         //   message: error.message
         // });
       }
+      toastLoading.clear();
     },
     showDetail(course) {
       this.isShowDetail = true;
@@ -188,16 +188,16 @@ export default {
 
     //delete course
     async deleteClose(clickPosition, instance) {
-      const { type,index } = instance.$attrs;
+      const { type, index } = instance.$attrs;
       const { userId } = this.user;
-      const course = this.courses[index]
-      const { publishTime } = course
+      const course = this.courses[index];
+      const { publishTime } = course;
       console.log(clickPosition, type, userId);
 
       switch (clickPosition) {
         case "left":
           this.isShowDetail = true;
-          this.showDetail(course)
+          this.showDetail(course);
           break;
         case "right":
           try {
