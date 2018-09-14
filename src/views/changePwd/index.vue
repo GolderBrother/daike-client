@@ -3,9 +3,9 @@
     <img class="logo" src="@/assets/images/daike.png">
 
     <van-cell-group class="box">
-      <van-field v-model="account" label-align="left" required clearable label="用户名" icon="question" placeholder="请输入用户名" @click-icon="handleQuestion" />
+      <van-field v-model="account" label-align="left" type="text" required clearable label="用户名" icon="question" placeholder="请输入用户名"/>
 
-      <van-field v-model="password" label-align="left" type="password" clearable label="新密码" placeholder="请输入新密码" required/>
+      <van-field v-model="password" label-align="left" type="password" clearable label="新密码" placeholder="请输入新密码" required />
 
       <van-field v-model="rePassword" label-align="left" type="password" clearable label="新密码" placeholder="请再次输入新密码" required @keyup.enter.native="handleChange"/>
     </van-cell-group>
@@ -37,7 +37,6 @@ export default {
     async handleChange() {
       try {
         const { account, password, rePassword } = this;
-        // 1.请求用户名是否存在
         if (account == "" || password == "") {
           this.$toast.fail("用户名或密码不能为空！");
           return;

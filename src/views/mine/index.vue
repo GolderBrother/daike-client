@@ -8,7 +8,7 @@
       <van-col span="4">
         <img class="header-img" :src="user.avatar || defaultHeader" alt="">
       </van-col>
-      <van-col span="10" offset="2" class="username">
+      <van-col span="10" offset="2" class="username"> 
         {{user.userName}}
       </van-col>
 
@@ -76,6 +76,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { Session } from '@/utils/storage'
 import EditInfo from '@/components/EditInfo'
 import defaultHeader from '@/assets/images/default_header.png'
 export default {
@@ -85,13 +86,14 @@ export default {
   data() {
     return {
       defaultHeader,
-      isShowEdit: false
+      isShowEdit: false,
+      // userData:{}
     };
   },
   methods: {
     onToggleEditPopup(flag) {
       const { userName } = this.user;
-      console.log(this.user)
+      // const { userName } = this.userData;
       if(userName){
         this.isShowEdit = flag;
       }else{
@@ -106,6 +108,14 @@ export default {
       this.$router.push("/login")
     },
   },
+  // 这边用的vuex的state,刷新后state就清空了
+  // 因此这边的部分用户数据先从sessionStorage中获取
+  // created(){
+  //   if(!this.user.userId || this.user.userId === ""){
+  //     this.$store.dispatch("getUserInfo")
+  //     console.log(this.user)
+  //   }
+  // },
   computed: {
     ...mapGetters([
       'user'

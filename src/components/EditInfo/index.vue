@@ -17,7 +17,7 @@
 
       <van-field v-model="editInfo.major" label-align="left" clearable label="专业" placeholder="请输入专业" />
 
-      <van-field v-model="editInfo.wechat" label-align="left" clearable label="微信" placeholder="请输入微信账号" />
+      <van-field v-model="editInfo.wechat" label-align="left" clearable label="微信" icon="question" placeholder="请输入微信号" @click-icon="questionWechat" />
 
       <van-field v-model="editInfo.qq" label-align="left" clearable label="QQ" placeholder="请输入QQ号" />
     </van-cell-group>
@@ -41,7 +41,7 @@ import { mapMutations, mapGetters } from "vuex";
 export default {
   data() {
     return {
-      editInfo: "",
+      editInfo: {},
       isShowCelectSchool: false,
       schoolName: "",
       schools: [
@@ -55,42 +55,47 @@ export default {
         //   city: "绵阳市"
         // }
       ],
-      school: ''
+      school: ""
     };
   },
+  // created() {
+  //   if (!this.user.userId || this.user.userId === "") {
+  //     this.$store.dispatch("getUserInfo");
+  //     console.log(this.user);
+  //   }
+  // },
   mounted() {
     this.editInfo = Object.assign({}, this.user);
+    console.log(this.editInfo);
   },
   computed: {
-    ...mapGetters([
-      'user'
-    ])
+    ...mapGetters(["user"])
   },
   methods: {
-    ...mapMutations(['SET_USER']),
+    ...mapMutations(["SET_USER"]),
     back() {
       this.$emit("toggleEditPopup", false);
     },
-    saveInfo() {
-      if (!this.user.userId) {
-        this.$toast("请先登录！");
-        return
-      }
+    async saveInfo() {
+      try {
+        if (!this.user.userId) {
+          this.$toast("请先登录！");
+          return;
+        }
 
-      if (!this.editInfo.schoolId) {
-        this.$toast("必填信息不能为空！");
-      }
+        if (!this.editInfo.schoolId) {
+          this.$toast("必填信息不能为空！");
+        }
 
-      const user = Object.assign(
-        {}, 
-        this.editInfo, 
-        this.user
-      )
-
-      this.$http.updateUser(user).then(res => {
+        const user = Object.assign({}, this.user, this.editInfo);
+        console.log(user)
+        const res = await this.$http.updateUser(user);
+        console.log(res);
         this.SET_USER(user);
         this.$toast(res.msg);
-      })
+      } catch (error) {
+        console.log(error);
+      }
     },
     questionName() {
       this.$toast("上课点名可能用到哦！");
@@ -98,15 +103,20 @@ export default {
     questionEmail() {
       this.$toast("课后作业发放需要联系你哦！");
     },
+    questionWechat() {
+      this.$toast("缘分就这样来的哦！");
+    },
     showSchoolSearch() {
       this.isShowCelectSchool = true;
     },
     onSearchSchool() {
-      this.$http.searchSchoolByName({
-        schoolName: this.schoolName
-      }).then(res => {
-        this.schools = res.data;
-      });
+      this.$http
+        .searchSchoolByName({
+          schoolName: this.schoolName
+        })
+        .then(res => {
+          this.schools = res.data;
+        });
     },
     selectedSchool(school) {
       this.editInfo.school = school.name;

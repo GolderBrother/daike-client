@@ -2,16 +2,18 @@
  * @Author: james.zhang  
  * @Date: 2018-09-10 15:26:22
  * @Last Modified by: james.zhang
- * @Last Modified time: 2018-09-12 11:14:38
+ * @Last Modified time: 2018-09-12 16:41:33
  * @Description: mine store 
  */
-import { Session } from '@/utils/storage';
-import defaultHeader from "@/assets/images/default_header.png";
+import {
+  Session
+} from '@/utils/storage';
+// import defaultHeader from "@/assets/images/default_header.png";
 import userAvatar from "@/assets/images/avatar.jpg";
 const state = {
   user: {
-    name:Session.get("user") || "",
-    avatar:Session.get("avatar") || defaultHeader 
+    // name:Session.get("user") || "",
+    // avatar:Session.get("avatar") || defaultHeader
   }
 }
 
@@ -22,10 +24,19 @@ const getters = {
 
 // actions
 const actions = {
-  setUserInfo({ commit }, data) {
+  getUserInfo({
+    commit
+  }) {
+    commit('GET_USER');
+  },
+  setUserInfo({
+    commit
+  }, data) {
     commit('SET_USER', data);
   },
-  exit({commit}){
+  exit({
+    commit
+  }) {
     commit("EXIT")
   }
 }
@@ -34,15 +45,37 @@ const actions = {
 const mutations = {
   // 设置用户信息
   SET_USER: (state, data) => {
-    const { account:username } = data;
+    // const { account:username } = data;
     state.user = data;
-    state.user["avatar"] = userAvatar
-    Session.set('user',username)
-    Session.set('avatar',userAvatar)
+    state.user["avatar"] = userAvatar;
+    Session.set(data);
+    Session.set("avatar", userAvatar);
   },
-  EXIT:(state,data) => {
+  // vuex中的state,刷新后state就清空了,因此就把user存在sessionStorage中,后面再从session获取
+  GET_USER: (state) => {
+    const user = {
+      qq: Session.get("qq"),
+      avatar: Session.get("avatar"),
+      userId: Session.get("userId"),
+      userName: Session.get("userName"),
+      studentId: Session.get("studentId"),
+      school: Session.get("school"),
+      schoolId: Session.get("schoolId"),
+      college: Session.get("college"),
+      major: Session.get("major"),
+      phone: Session.get("phone"),
+      email: Session.get("email"),
+      wechat: Session.get("wechat")
+    };
+    state.user = user;
+  },
+  EXIT: (state, data) => {
     state.user = {};
-    Session.remove(["user","avatar"]);
+    let userSession = [];
+    for (let ss in window.sessionStorage) {
+      userSession.push(ss)
+    }
+    Session.remove(userSession);
   }
 }
 

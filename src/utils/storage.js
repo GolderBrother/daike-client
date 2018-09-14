@@ -34,6 +34,7 @@ export const Session = {
     },
     set(key,value){
         const arg = arguments[0];
+        console.log(arg)
         if(typeJudge(arg,"Object")){
             for(let i in arg){
                 ss.setItem(i,JSON.stringify(arg[i]))

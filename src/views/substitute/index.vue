@@ -152,6 +152,11 @@ export default {
     // 代课
     async onSubstituteClicked(course) {
       const { userId, userName } = this.user;
+      if(!userId || !userName){
+        this.$toast.fail("请先登录");
+        this.isShowCourse = false;
+        return;
+      }
       if (userId == course.publisher) {
         this.$toast("不能代自己发布的课程！");
         this.isShowCourse = false;
@@ -173,9 +178,15 @@ export default {
     },
     // 收藏
     async onCollectionClicked() {
+      const { userId } = this.user;
+      if(!userId){
+        this.$toast.fail("请先登录");
+        this.isShowCourse = false;
+        return;
+      }
       try {
         const { code, msg } = await this.$http.collectCourse({
-          userId: this.user.userId,
+          userId,
           courseId: this.course.id
         });
         if (code == 1) {

@@ -2,7 +2,7 @@
  * @Author: james.zhang 
  * @Date: 2018-09-11 14:57:41 
  * @Last Modified by: james.zhang
- * @Last Modified time: 2018-09-12 10:01:12
+ * @Last Modified time: 2018-09-12 13:47:28
  * @Description: axios 封装的公共方法 
  */
 
@@ -24,6 +24,7 @@ export default function $axios(options) {
     })
     // axios请求拦截
     instance.interceptors.request.use(
+      // 在发送请求之前做些什么
       config => {
         // Tip: 1
         // 请求开始的时候可以结合 vuex 开启全屏的 loading 动画
@@ -46,6 +47,7 @@ export default function $axios(options) {
         }
         return config
       },
+      // 对请求错误做些什么
       error => {
         // 请求错误时做些事(接口错误、超时等)
         // Tip: 4
