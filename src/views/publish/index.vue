@@ -8,7 +8,7 @@
     <van-row class="row tip" type="flex" align="center">
       <van-icon name="clock"></van-icon>
       <span>开课时间：</span>
-      <span>{{pickDate || curriculaTime}}</span>
+      <span>{{courseData.courseTime || curriculaTime}}</span>
       <van-button @click="isShowTimePicker = !isShowTimePicker" size="small">{{isShowTimePicker ? '关闭设置' : '设置时间'}}</van-button>
     </van-row>
 
@@ -19,15 +19,15 @@
     </van-cell-group>
 
     <van-cell-group>
-      <van-field required v-model="courseName" placeholder="请输入课程名称" label="课程名称" left-icon="sign" />
+      <van-field required v-model="courseData.courseName" placeholder="请输入课程名称" label="课程名称" left-icon="sign" />
     </van-cell-group>
 
     <van-cell-group>
-      <van-field required v-model="courseClass" placeholder="请输入第几讲课时" label="上课讲时" left-icon="pending-orders" />
+      <van-field required v-model="courseData.courseClass" placeholder="请输入第几讲课时" label="上课讲时" left-icon="pending-orders" />
     </van-cell-group>
 
     <van-cell-group>
-      <van-field required v-model="coursePlace" placeholder="请输入上课地点" label="上课地点" left-icon="location" />
+      <van-field required v-model="courseData.coursePlace" placeholder="请输入上课地点" label="上课地点" left-icon="location" />
     </van-cell-group>
 
     <p class="tip-info">
@@ -37,57 +37,65 @@
 
     <van-cell-group class="checkbox">
       <van-field v-model="publisher.userName" placeholder="请输入姓名" label="姓名" left-icon="contact" />
-      <van-checkbox v-model="hasName" />
+      <van-checkbox v-model="courseData.hasName" />
     </van-cell-group>
 
     <van-cell-group class="checkbox">
       <van-field v-model="publisher.studentId" placeholder="请输入学号" label="学号" left-icon="exchange" />
-      <van-checkbox v-model="hasStuId" />
+      <van-checkbox v-model="courseData.hasStuId" />
     </van-cell-group>
 
     <van-cell-group class="checkbox">
       <van-field type="tel" v-model="publisher.phone" placeholder="请输入电话号码" label="电话" left-icon="phone" />
-      <van-checkbox v-model="hasPhone" />
+      <van-checkbox v-model="courseData.hasPhone" />
     </van-cell-group>
 
     <van-cell-group class="checkbox">
-      <van-field type="number" v-model="reward" placeholder="请输入代课赏金" label="赏金" left-icon="gold-coin" />
-      <van-checkbox v-model="hasReward" />
+      <van-field type="number" v-model="courseData.reward" placeholder="请输入代课赏金" label="赏金" left-icon="gold-coin" />
+      <van-checkbox v-model="courseData.hasReward" />
     </van-cell-group>
 
     <van-cell-group class="remark">
-      <van-field type="textarea" v-model="remark" placeholder="请输入备注信息" label="备注" left-icon="pending-orders" />
+      <van-field type="textarea" v-model="courseData.remark" placeholder="请输入备注信息" label="备注" left-icon="pending-orders" />
     </van-cell-group>
 
-    <van-button class="btn-publish" @click="handlePublish" size="small">确认发布</van-button>
+    <van-button class="btn-publish" @click="handlePublish" size="small" >{{ isUpdate ? "确认更新" : "确认发布" }}</van-button>
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import { isEmptyObj } from "@/utils/utils";
 import { formatDateTime } from "@/utils/formatTime";
 export default {
   data() {
     return {
-      hasName: true,
-      hasStuId: false,
-      hasPhone: false,
-      hasReward: false,
-      remark: "", // 备注
-      reward: "", // 赏金
+      courseData: {
+        hasName: true,
+        hasStuId: false,
+        hasPhone: false,
+        hasReward: false,
+        remark: "", // 备注
+        reward: "", // 赏金
+        courseTime: "", // 开课时间
+        courseName: "", // 课程名称
+        courseClass: "", // 上课讲时（exp: 上午第一讲）
+        coursePlace: "" // 上课地点
+      },
       currentDate: new Date(),
-      pickDate: "",
       isShowTimePicker: false,
       minDate: new Date(),
       maxDate: new Date(new Date().getFullYear() + 1, 6, 17),
-      publisher: "",
-      courseName: "", // 课程名称
-      courseClass: "", // 上课讲时（exp: 上午第一讲）
-      coursePlace: "" // 上课地点
+      publisher: {},
+      isUpdate: false  // 判断是发布还是更新
     };
   },
   methods: {
     async handlePublish() {
+      if(this.isUpdate){
+        this.handleUpdate();
+        return;
+      }
       if (!this.courseName || !this.courseClass || !this.coursePlace) {
         this.$toast("必要信息不能为空！");
         return;
@@ -101,71 +109,124 @@ export default {
         school: this.user.school,
         publishTime: formatDateTime(new Date()),
         closeTime: "",
-        remark: this.remark,
+        remark: this.courseData.remark,
         receiver: "",
         receiverName: "",
         province: this.user.provinceId,
         college: this.publisher.college,
         major: this.publisher.major,
-        courseName: this.courseName,
-        courseTime: this.pickDate,
-        courseClass: this.courseClass,
-        coursePlace: this.coursePlace,
+        courseName: this.courseData.courseName,
+        courseTime: this.courseData.courseTime,
+        courseClass: this.courseData.courseClass,
+        coursePlace: this.courseData.coursePlace,
         publisherName: this.publisher.userName || "",
         studentId: this.publisher.studentId || "",
         phone: this.publisher.phone || "",
-        reward: this.reward || 0,
+        reward: this.courseData.reward || 0,
         // 是否在课程信息中展示这些字段
-        hasName: this.hasName,
-        hasStuId: this.hasStuId,
-        hasPhone: this.hasPhone,
-        hasReward: this.hasReward
+        hasName: this.courseData.hasName,
+        hasStuId: this.courseData.hasStuId,
+        hasPhone: this.courseData.hasPhone,
+        hasReward: this.courseData.hasReward
       };
-      const toastLoading = this.$toast.loading({
-        mask: true,
-        duration: 0,
-        message: "加载中..."
-      });
+      const $toastLoading = this.toastLoading();
       try {
         const res = await this.$http.publishCourse(data);
         this.$toast.allowMultiple();
-        toastLoading.clear();
+        $toastLoading.clear();
         this.$toast.success("发布成功！");
         this.clearData();
       } catch (error) {
-        toastLoading.clear();
+        $toastLoading.clear();
         this.$toast.fail({
           duration: 1000,
           message: error.message
         });
       }
     },
+    async handleUpdate() {
+      const $toastLoading = this.toastLoading();
+      try {
+        const courseObj = Object.assign({},this.course,this.courseData)
+        console.log(courseObj)
+        const res = await this.$http.updateCourse(courseObj);
+        console.log(res);
+        this.$toast.allowMultiple();
+        $toastLoading.clear();
+        this.$toast.success("更新成功！");
+        this.clearData();
+        this.$store.dispatch("courseClear");
+        this.$router.push("/home/course");
+      } catch (error) {
+        $toastLoading.clear();
+      }
+    },
     confirmTime(value) {
-      this.pickDate = formatDateTime(value);
+      this.courseData.courseTime = formatDateTime(value);
       this.isShowTimePicker = false;
     },
-    clearData(){
-      this.courseName = "";
-      this.courseClass = "";
-      this.coursePlace = "";
-      this.reward = "";
-      this.remark = "";
-      this.hasStuId=false;
-      this.hasPhone=false;
-      this.hasReward=false;
+    clearData() {
+      this.courseData.courseName = "";
+      this.courseData.courseClass = "";
+      this.courseData.coursePlace = "";
+      this.courseData.reward = "";
+      this.courseData.remark = "";
+      this.courseData.hasStuId = false;
+      this.courseData.hasPhone = false;
+      this.courseData.hasReward = false;
+    },
+    toastLoading(){
+      return this.$toast.loading({
+        mask: true,
+        duration: 0,
+        message: "加载中..."
+      });
     }
+    /* 
+    getCourse({
+      closeTime,
+      college,
+      id,
+      major,
+      phone,
+      publishTime,
+      publisher,
+      publisherName,
+      receiver,
+      receiverName,
+      status,
+      school,
+      studentId,
+      ...courseObj
+    }) {
+      this.courseData = courseObj;
+    }
+    */
   },
   computed: {
-    ...mapGetters(["user"]),
+    ...mapGetters(["user", "course"]),
     curriculaTime() {
       return formatDateTime(this.currentDate);
+    }
+  },
+  created() {
+    if (!isEmptyObj(this.course)) {
+      this.isUpdate = true;
+      // 浅拷贝原理,这样写就不会修改store中的数据,也可以说要修改state数据 必须提交commit 一个 mutation
+      this.courseData = Object.assign({},this.course);
+
+      // this.courseData = this.course;  //报错
+      // this.getCourse(this.course);
+    } else {
+      this.isUpdate = false;
     }
   },
   mounted() {
     this.publisher = Object.assign({}, this.user);
     // 初始化开课时间
-    this.pickDate = formatDateTime(this.currentDate);
-
+    if(!this.isUpdate){
+      this.courseData.courseTime = formatDateTime(this.currentDate);
+    };
     if (!this.user.schoolId) {
       this.$dialog
         .alert({
@@ -175,10 +236,11 @@ export default {
           this.$router.push("/home/mine");
         });
     }
-
-    // if (!this.user.schoolId) {
-    //   Toast('请先绑定学校！');
-    // }
+  },
+  destroyed() {
+    // 页面销毁后，清空页面数据和 store 数据
+    this.clearData();
+    this.$store.dispatch("courseClear");
   }
 };
 </script>

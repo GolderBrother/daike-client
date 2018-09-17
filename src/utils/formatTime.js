@@ -1,14 +1,12 @@
+const toTwo = date => {
+  return date < 10 ? ("0" + date) : date;
+}
 export const formatDateTime = (date) => {
   var y = date.getFullYear();
-  var m = date.getMonth() + 1;
-  m = m < 10 ? "0" + m : m;
-  var d = date.getDate();
-  d = d < 10 ? "0" + d : d;
-  var h = date.getHours();
-  h = h < 10 ? "0" + h : h;
-  var minute = date.getMinutes();
-  minute = minute < 10 ? "0" + minute : minute;
-  var second = date.getSeconds();
-  second = second < 10 ? "0" + second : second;
+  var m = toTwo(date.getMonth() + 1);
+  var d = toTwo(date.getDate());
+  var h = toTwo(date.getHours());
+  var minute = toTwo(date.getMinutes());
+  var second = toTwo(date.getSeconds());
   return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
 }

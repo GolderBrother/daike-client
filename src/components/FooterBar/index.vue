@@ -22,6 +22,7 @@ export default {
   },
   created(){
     const { path } = this.$route;
+    this.$store.dispatch("getLastTab");
     this.footerBarList.forEach((item,index) => {
       if(item.path === path){
         this.active = index;

@@ -2,7 +2,7 @@
  * @Author: james.zhang 
  * @Date: 2018-09-10 16:32:10 
  * @Last Modified by: james.zhang
- * @Last Modified time: 2018-09-12 16:04:30
+ * @Last Modified time: 2018-09-17 19:56:17
  * @Description: home store 
  */
 import { Session } from '@/utils/storage'
@@ -22,12 +22,18 @@ const getters = {
 
 // actions
 const actions = {
-
+    getLastTab({commit}){
+        commit("GET_LAST_TAB")
+    }
 }
 
 // mutations
 const mutations = {
-    
+    // 获取最后一个 tab 名字
+    GET_LAST_TAB:(state) => {
+        let title = Session.get("userName") ? '我的' : '未登录';
+        state.footerBarList[state.footerBarList.length - 1].title = title
+    }
 }
 
 export default {

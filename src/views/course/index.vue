@@ -3,7 +3,7 @@
     <van-tabs @click="onChangeTab">
       <van-tab v-for="(tab,index) in tabs" :title="tab.title" :key="tab.name">
         <van-swipe-cell :right-width="65" :left-width="65" @click.native="showDetail(course)" v-for="(course,index) in courses" v-if="course" :key="course.id" :index="index" :type="tab.type" :on-close="deleteClose">
-          <span slot="left">详情</span>
+          <span slot="left">{{ tab.type | leftBtn }}</span>
           <van-card :thumb="course.publisherHeader || thumbImg">
             <div class="title" slot="title">
               课程名称：{{course.courseName}} <br />
@@ -196,8 +196,13 @@ export default {
 
       switch (clickPosition) {
         case "left":
-          this.isShowDetail = true;
-          this.showDetail(course);
+          // /course/update
+          if (type === "publish") {
+            this.$store.dispatch("courseUpdate", course);
+            this.$router.push("/home/publish");
+          } else {
+            this.showDetail(course);
+          }
           break;
         case "right":
           try {
@@ -224,6 +229,12 @@ export default {
   },
   mounted() {
     this.getCourseByType(this.user.userId, "publish");
+  },
+  filters: {
+    leftBtn: type => {
+      let text = type === "publish" ? "更改" : "详情";
+      return text;
+    }
   }
 };
 </script>
