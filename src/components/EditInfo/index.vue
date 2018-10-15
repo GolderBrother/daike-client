@@ -3,7 +3,7 @@
     <van-nav-bar title="个人信息" left-text="返回" right-text="保存" left-arrow @click-left="back" @click-right="saveInfo" />
 
     <van-cell-group class="box">
-      <van-field v-model="editInfo.userName" label-align="left" clearable label="姓名" icon="question" placeholder="请输入用户名" @click-icon="questionName" />
+      <van-field v-model="editInfo.account" label-align="left" clearable label="姓名" icon="question" placeholder="请输入用户名" @click-icon="questionName" />
 
       <van-field v-model="editInfo.email" label-align="left" clearable label="邮箱" icon="question" placeholder="请输入邮箱" @click-icon="questionEmail" />
 

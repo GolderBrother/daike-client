@@ -52,6 +52,7 @@ export default {
         if (code === 1) {
           this.$toast.success(msg);
           this.account = this.password = this.rePassword = "";
+          this.$router.push('/login');
         }
       } catch (error) {
         console.log(error);

@@ -139,7 +139,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -154,6 +154,9 @@ export default {
     ...mapGetters(["user", "tabs"])
   },
   methods: {
+    ...mapMutations({
+      courseUpdate: "COURSE_UPDATE"
+    }),
     async onChangeTab(index, title) {
       const userId = this.user.userId;
       const type = this.tabs[index].type;
@@ -198,7 +201,8 @@ export default {
         case "left":
           // /course/update
           if (type === "publish") {
-            this.$store.dispatch("courseUpdate", course);
+            this.courseUpdate(course);
+            // this.$store.dispatch("courseUpdate", course);
             this.$router.push("/home/publish");
           } else {
             this.showDetail(course);

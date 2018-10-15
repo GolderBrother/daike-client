@@ -7,7 +7,7 @@
 
       <van-field v-model="password" label-align="left" type="password" clearable label="密码" placeholder="请输入密码" required @keyup.enter.native="handleLogin"/>
 
-      <van-field v-show="!isLogin" v-model="rePassword" label-align="left" type="password" clearable label="重复密码" placeholder="请再次输入密码" required />
+      <van-field v-show="!isLogin" v-model="rePassword" label-align="left" type="password" clearable label="重复密码" placeholder="请再次输入密码" required @keyup.enter.native="handleLogin" />
     </van-cell-group>
     <van-row class="forget-box">
       <van-col>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-
+import { mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -39,6 +39,9 @@ export default {
     };
   },
   methods: {
+    ...mapMutations({
+      setUserInfo: "SET_USER"
+    }),
     handleQuestion() {
       // no question
     },
@@ -49,7 +52,8 @@ export default {
           password: this.password
         });
         this.$toast.clear();
-        this.$store.dispatch('setUserInfo',data)
+        // this.$store.dispatch('setUserInfo',data)
+        this.setUserInfo(data);
         // this.SET_USER(data);
         this.$router.push("/home");
       } catch (error) {
@@ -90,7 +94,7 @@ export default {
             account: this.account,
             password: this.password
           });
-          this.SET_USER(data);
+          this.setUserInfo(data);
           this.$router.push("/home");
         } catch (error) {
           console.log(error);

@@ -2,7 +2,7 @@
  * @Author: james.zhang  
  * @Date: 2018-09-10 15:26:22
  * @Last Modified by: james.zhang
- * @Last Modified time: 2018-09-17 16:31:32
+ * @Last Modified time: 2018-10-15 21:08:36
  * @Description: mine store 
  */
 import {
@@ -56,6 +56,7 @@ const mutations = {
     const user = {
       qq: Session.get("qq"),
       avatar: Session.get("avatar"),
+      account: Session.get("account"),
       userId: Session.get("userId"),
       userName: Session.get("userName"),
       studentId: Session.get("studentId"),

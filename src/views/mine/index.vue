@@ -9,12 +9,12 @@
         <img class="header-img" :src="user.avatar || defaultHeader" alt="">
       </van-col>
       <van-col span="10" offset="2" class="username"> 
-        {{user.userName}}
+        {{userData.username}}
       </van-col>
 
       <van-col span="8" offset="2">
         <van-button class="btn-edit" size="mini" @click="onToggleEditPopup(true)">编辑个人资料</van-button>
-        <van-button class="btn-logout" size="mini" @click="goLogin()">{{ user.userName ? '退出登录' : '前往登录'}}</van-button>
+        <van-button class="btn-logout" size="mini" @click="goLogin()">{{ userData.username ? '退出登录' : '前往登录'}}</van-button>
       </van-col>
     </van-row>
 
@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { Session } from '@/utils/storage'
 import EditInfo from '@/components/EditInfo'
 import defaultHeader from '@/assets/images/default_header.png'
@@ -87,26 +87,37 @@ export default {
     return {
       defaultHeader,
       isShowEdit: false,
-      // userData:{}
+      userData:{
+        username: ""
+      }
     };
   },
+  created() {
+    const { account, userName } = this.user;
+    this.userData.username = account || userName;
+  },
   methods: {
+    ...mapMutations({
+      exit: "EXIT"  // this.exit() 映射为 this.$store.commit("EXIT")
+    }),
     onToggleEditPopup(flag) {
-      const { userName } = this.user;
-      // const { userName } = this.userData;
-      if(userName){
+      const { username } = this.userData;
+      if(username){
         this.isShowEdit = flag;
       }else{
         this.$toast('请先登录')
       }
     },
     goLogin(){
-      const { userName } = this.user;
-      if(userName){
-        this.$store.dispatch("exit");
+      if(this.userData.username){
+        // this.$store.dispatch("exit");
+        this.exit();
       }
       this.$router.push("/login")
     },
+    getUserInfo() {
+
+    }
   },
   // 这边用的vuex的state,刷新后state就清空了
   // 因此这边的部分用户数据先从sessionStorage中获取

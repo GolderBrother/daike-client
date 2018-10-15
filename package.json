@@ -2,7 +2,7 @@
   "name": "dai-ke",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "kuang xiang jun <kuangxj@7moor.com>",
+  "author": "james zhang <1204788939@qq.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",

@@ -15,7 +15,7 @@
     <van-datetime-picker v-show="isShowTimePicker" :min-date="minDate" :maxDate="maxDate" v-model="currentDate" type="datetime" cancel-button-text=" " @confirm="confirmTime" />
     
     <van-cell-group>
-      <van-field disabled required :value="publisher.school" placeholder="请输入学校名称" label="学校名" left-icon="wap-home" />
+      <van-field required :value="publisher.school" placeholder="请输入学校名称" label="学校名" left-icon="wap-home" />
     </van-cell-group>
 
     <van-cell-group>
@@ -36,7 +36,7 @@
     </p>
 
     <van-cell-group class="checkbox">
-      <van-field v-model="publisher.userName" placeholder="请输入姓名" label="姓名" left-icon="contact" />
+      <van-field v-model="publisher.account" placeholder="请输入姓名" label="姓名" left-icon="contact" />
       <van-checkbox v-model="courseData.hasName" />
     </van-cell-group>
 
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import { isEmptyObj } from "@/utils/utils";
 import { formatDateTime } from "@/utils/formatTime";
 export default {
@@ -91,12 +91,16 @@ export default {
     };
   },
   methods: {
+    ...mapMutations({
+      courseClear: "COURSE_CLEAR"
+    }),
     async handlePublish() {
       if(this.isUpdate){
         this.handleUpdate();
         return;
       }
-      if (!this.courseName || !this.courseClass || !this.coursePlace) {
+      const { courseName, courseClass, coursePlace } = this.courseData;
+      if (!courseName || !courseClass || !coursePlace) {
         this.$toast("必要信息不能为空！");
         return;
       }
@@ -155,7 +159,8 @@ export default {
         $toastLoading.clear();
         this.$toast.success("更新成功！");
         this.clearData();
-        this.$store.dispatch("courseClear");
+        // this.$store.dispatch("courseClear");
+        this.courseClear();
         this.$router.push("/home/course");
       } catch (error) {
         $toastLoading.clear();
@@ -238,9 +243,10 @@ export default {
     }
   },
   destroyed() {
-    // 页面销毁后，清空页面数据和 store 数据
+    // 页面销毁后，清空页面数据和 store state 数据
     this.clearData();
-    this.$store.dispatch("courseClear");
+    // this.$store.dispatch("courseClear");
+    this.courseClear();
   }
 };
 </script>
